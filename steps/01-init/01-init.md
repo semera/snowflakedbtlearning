@@ -66,3 +66,8 @@ select parse_json($$
 }
 $$);
 ```
+
+## Navigation
+
+- [Back to README](../../README.md)
+- [Next step: 02 Debug](../02-debug/02-debug.md)

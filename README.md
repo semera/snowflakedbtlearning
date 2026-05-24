@@ -15,11 +15,13 @@ The project is built step by step. Each step should be small and focused.
 ## Structure
 
 - `docs/` - general project documents.
-- `docs/contract.md` - raw event contract for `person.v1` and `address.v1`.
+- [docs/contract.md](docs/contract.md) - raw event contract for `person.v1` and `address.v1`.
 - `steps/` - learning steps.
-- `steps/01-init/` - first dbt project setup.
-- `steps/02-debug/` - dbt connection check.
-- `steps/03-staging/` - first simple staging model.
+- [steps/01-init/](steps/01-init/01-init.md) - first dbt project setup.
+- [steps/02-debug/](steps/02-debug/02-debug.md) - dbt connection check.
+- [steps/03-staging/](steps/03-staging/03-staging.md) - first simple staging model.
+- [steps/04-source-clone-vars/](steps/04-source-clone-vars/04-source-clone-vars.md) - dbt vars, source, and raw clone.
+- [steps/05-tests/](steps/05-tests/05-tests.md) - source descriptions and basic dbt data tests.
 
 Step names should be short, for example `01-init` or `03-staging`.
 

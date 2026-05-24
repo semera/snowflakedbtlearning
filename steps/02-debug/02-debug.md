@@ -87,6 +87,13 @@ config-version: 2
 profile: snowflake_dbt_learning
 ```
 
+Notes:
+
+- `name` is the dbt project name.
+- `profile` points to a connection profile in `profiles.yml`.
+- The `profile` value must match a top-level key in `profiles.yml`.
+- `name` and `profile` can have different values.
+
 `profiles.yml` tells dbt how to connect to Snowflake.
 
 ```yaml
@@ -139,6 +146,13 @@ dbt debug --profiles-dir .
 
 The goal is to see a successful Snowflake connection.
 
+Expected output should include something like:
+
+```text
+19:42:51    Connection test: [OK connection ok]
+19:42:51  All checks passed!
+```
+
 ## Alternative Authentication
 
 The default setup in this guide uses password authentication.
@@ -171,3 +185,9 @@ set rsa_public_key = '<public_key_without_begin_end_lines>';
 ```
 
 Use password authentication for local learning. Use key pair authentication for service users or automation.
+
+## Navigation
+
+- [Back to README](../../README.md)
+- [Previous step: 01 Init](../01-init/01-init.md)
+- [Next step: 03 Staging](../03-staging/03-staging.md)
