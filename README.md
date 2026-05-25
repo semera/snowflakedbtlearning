@@ -25,6 +25,7 @@ The project is built step by step. Each step should be small and focused.
 - [steps/06-deduplicate-staging/](steps/06-deduplicate-staging/06-deduplicate-staging.md) - distinct staging rows and uniqueness tests.
 - [steps/07-unit-tests/](steps/07-unit-tests/07-unit-tests.md) - mocked inputs and unit test examples.
 - [steps/08-current-person/](steps/08-current-person/08-current-person.md) - latest person state by sequence.
+- [steps/09-incremental/](steps/09-incremental/09-incremental.md) - incremental processing by ingest timestamp.
 
 Step names should be short, for example `01-init` or `03-staging`.
 
