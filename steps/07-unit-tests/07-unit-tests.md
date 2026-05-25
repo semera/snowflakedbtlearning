@@ -18,6 +18,8 @@ dbt has two useful test types here.
 - Unit tests are defined in YAML files under `models/`.
 - Unit test mock data is defined in `given`.
 - Unit test expected output is defined in `expect`.
+- Unit test mock data must be literal data.
+- Jinja macros are not supported inside unit test `rows` or fixture files.
 - Data tests test real model data in the warehouse.
 - Data tests include `not_null`, `accepted_values`, and `unique`.
 - Data tests can also be custom SQL tests.
@@ -31,74 +33,11 @@ For this step:
 
 ## Files
 
-Create `macros/mock_person_raw.sql`:
+Do not use helper macros inside `unit_tests.rows`.
 
-```jinja
-{% macro mock_person_raw(sequence, surname) %}
-
-{% set event_id_by_surname = {
-    'A': '7b3b31d4-6df8-4e1f-9f7f-6ec22a7d3f41',
-    'B': '3f65f416-6a3e-4f65-b6c1-fb0d4f0e74d8'
-} %}
-{% set event_id = event_id_by_surname.get(surname, '7b3b31d4-6df8-4e1f-9f7f-6ec22a7d3f41') %}
-
-select parse_json($$
-{
-  "events": [
-    {
-      "metadata": {
-        "event_id": "{{ event_id }}",
-        "type": "person.v1",
-        "time": "2026-05-23T12:34:56Z",
-        "sequence": {{ sequence }},
-        "mutation": "insert"
-      },
-      "data": {
-        "person_id": "db2e56e1-54f4-4f8e-91a5-63d02ad8b8a1",
-        "pin": "1234567890",
-        "first_name": "John",
-        "surname": "{{ surname }}",
-        "date_of_birth": "1980-01-15"
-      }
-    }
-  ]
-}
-$$) as payload
-
-{% endmacro %}
-```
-
-Create `macros/mock_person_expected.sql`:
-
-```jinja
-{% macro mock_person_expected(sequence, surname) %}
-
-{% set event_id_by_surname = {
-    'A': '7b3b31d4-6df8-4e1f-9f7f-6ec22a7d3f41',
-    'B': '3f65f416-6a3e-4f65-b6c1-fb0d4f0e74d8'
-} %}
-{% set event_id = event_id_by_surname.get(surname, '7b3b31d4-6df8-4e1f-9f7f-6ec22a7d3f41') %}
-
-select
-    '{{ event_id }}' as event_id,
-    'person.v1' as event_type,
-    '2026-05-23T12:34:56'::timestamp_ntz as event_time,
-    {{ sequence }} as sequence,
-    'insert' as mutation,
-    'db2e56e1-54f4-4f8e-91a5-63d02ad8b8a1' as person_id,
-    '1234567890' as pin,
-    'John' as first_name,
-    '{{ surname }}' as surname,
-    '1980-01-15'::date as date_of_birth
-
-{% endmacro %}
-```
-
-These helpers create one row each.
-
-- Calling `mock_person_raw(1000, 'A')` twice creates an exact duplicate.
-- Calling `mock_person_raw(1000, 'A')` and `mock_person_raw(1000, 'B')` creates two different events with the same `sequence`.
-- `mock_person_expected` creates matching expected rows for the unit test output.
+- dbt does not render Jinja macros there.
+- If you write `{{ mock_person_raw(...) }}`, dbt reports `mock_person_raw is undefined`.
+- For this step, keep the unit test data inline.
 
 Create `models/mystaging/stg_person_unit_tests.yml`:
 
@@ -112,13 +51,65 @@ unit_tests:
       - input: source('raw', 'raw_person')
         format: sql
         rows: |
-          {{ mock_person_raw(1000, 'A') }}
+          select parse_json($$
+          {
+            "events": [
+              {
+                "metadata": {
+                  "event_id": "7b3b31d4-6df8-4e1f-9f7f-6ec22a7d3f41",
+                  "type": "person.v1",
+                  "time": "2026-05-23T12:34:56Z",
+                  "sequence": 1000,
+                  "mutation": "insert"
+                },
+                "data": {
+                  "person_id": "db2e56e1-54f4-4f8e-91a5-63d02ad8b8a1",
+                  "pin": "1234567890",
+                  "first_name": "John",
+                  "surname": "A",
+                  "date_of_birth": "1980-01-15"
+                }
+              }
+            ]
+          }
+          $$) as payload
           union all
-          {{ mock_person_raw(1000, 'A') }}
+          select parse_json($$
+          {
+            "events": [
+              {
+                "metadata": {
+                  "event_id": "7b3b31d4-6df8-4e1f-9f7f-6ec22a7d3f41",
+                  "type": "person.v1",
+                  "time": "2026-05-23T12:34:56Z",
+                  "sequence": 1000,
+                  "mutation": "insert"
+                },
+                "data": {
+                  "person_id": "db2e56e1-54f4-4f8e-91a5-63d02ad8b8a1",
+                  "pin": "1234567890",
+                  "first_name": "John",
+                  "surname": "A",
+                  "date_of_birth": "1980-01-15"
+                }
+              }
+            ]
+          }
+          $$) as payload
     expect:
       format: sql
       rows: |
-        {{ mock_person_expected(1000, 'A') }}
+        select
+            '7b3b31d4-6df8-4e1f-9f7f-6ec22a7d3f41' as event_id,
+            'person.v1' as event_type,
+            '2026-05-23T12:34:56'::timestamp_ntz as event_time,
+            1000 as sequence,
+            'insert' as mutation,
+            'db2e56e1-54f4-4f8e-91a5-63d02ad8b8a1' as person_id,
+            '1234567890' as pin,
+            'John' as first_name,
+            'A' as surname,
+            '1980-01-15'::date as date_of_birth
 
   - name: stg_person_keeps_same_sequence_with_different_data
     model: stg_person
@@ -126,15 +117,77 @@ unit_tests:
       - input: source('raw', 'raw_person')
         format: sql
         rows: |
-          {{ mock_person_raw(1000, 'A') }}
+          select parse_json($$
+          {
+            "events": [
+              {
+                "metadata": {
+                  "event_id": "7b3b31d4-6df8-4e1f-9f7f-6ec22a7d3f41",
+                  "type": "person.v1",
+                  "time": "2026-05-23T12:34:56Z",
+                  "sequence": 1000,
+                  "mutation": "insert"
+                },
+                "data": {
+                  "person_id": "db2e56e1-54f4-4f8e-91a5-63d02ad8b8a1",
+                  "pin": "1234567890",
+                  "first_name": "John",
+                  "surname": "A",
+                  "date_of_birth": "1980-01-15"
+                }
+              }
+            ]
+          }
+          $$) as payload
           union all
-          {{ mock_person_raw(1000, 'B') }}
+          select parse_json($$
+          {
+            "events": [
+              {
+                "metadata": {
+                  "event_id": "3f65f416-6a3e-4f65-b6c1-fb0d4f0e74d8",
+                  "type": "person.v1",
+                  "time": "2026-05-23T12:34:56Z",
+                  "sequence": 1000,
+                  "mutation": "insert"
+                },
+                "data": {
+                  "person_id": "db2e56e1-54f4-4f8e-91a5-63d02ad8b8a1",
+                  "pin": "1234567890",
+                  "first_name": "John",
+                  "surname": "B",
+                  "date_of_birth": "1980-01-15"
+                }
+              }
+            ]
+          }
+          $$) as payload
     expect:
       format: sql
       rows: |
-        {{ mock_person_expected(1000, 'A') }}
+        select
+            '7b3b31d4-6df8-4e1f-9f7f-6ec22a7d3f41' as event_id,
+            'person.v1' as event_type,
+            '2026-05-23T12:34:56'::timestamp_ntz as event_time,
+            1000 as sequence,
+            'insert' as mutation,
+            'db2e56e1-54f4-4f8e-91a5-63d02ad8b8a1' as person_id,
+            '1234567890' as pin,
+            'John' as first_name,
+            'A' as surname,
+            '1980-01-15'::date as date_of_birth
         union all
-        {{ mock_person_expected(1000, 'B') }}
+        select
+            '3f65f416-6a3e-4f65-b6c1-fb0d4f0e74d8' as event_id,
+            'person.v1' as event_type,
+            '2026-05-23T12:34:56'::timestamp_ntz as event_time,
+            1000 as sequence,
+            'insert' as mutation,
+            'db2e56e1-54f4-4f8e-91a5-63d02ad8b8a1' as person_id,
+            '1234567890' as pin,
+            'John' as first_name,
+            'B' as surname,
+            '1980-01-15'::date as date_of_birth
 ```
 
 ## Run
