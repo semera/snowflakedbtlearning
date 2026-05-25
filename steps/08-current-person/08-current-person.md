@@ -132,6 +132,40 @@ This step can hide some source data problems.
 - A better long-term design is to add an intermediate layer for testing source data before this model.
 - For this learning step, this simpler approach is enough.
 
+## Add an update event
+
+Run this in Snowflake before rebuilding the view.
+
+This event updates the valid person from the first step.
+
+```sql
+insert into raw.raw_person (payload)
+select parse_json($$
+{
+  "events": [
+    {
+      "metadata": {
+        "event_id": "8a1779b1-0b38-4cf0-a7c0-4fda585f9e4c",
+        "type": "person.v1",
+        "time": "2026-05-23T12:40:56Z",
+        "sequence": 1010,
+        "mutation": "update"
+      },
+      "data": {
+        "person_id": "db2e56e1-54f4-4f8e-91a5-63d02ad8b8a1",
+        "pin": "1234567890",
+        "first_name": "John",
+        "surname": "Updated",
+        "date_of_birth": "1980-01-15"
+      }
+    }
+  ]
+}
+$$);
+```
+
+After `dbt run`, `stg_person` should show only the row with `sequence = 1010` for this `person_id`.
+
 ## Run
 
 Rebuild the staging view:
