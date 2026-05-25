@@ -210,6 +210,42 @@ dbt run --select stg_person
 
 This reads only raw rows with `ingest_timestamp` greater than the maximum `_last_ingest_timestamp` already stored in `stg_person`.
 
+## Check Materialized Behavior
+
+`stg_person` is now a table.
+
+After inserting a new raw event, check `stg_person` before running dbt again:
+
+```sql
+select
+    person_id,
+    sequence,
+    surname,
+    _last_ingest_timestamp
+from staging.stg_person;
+```
+
+The row should not change yet.
+
+Then run:
+
+```powershell
+dbt run --select stg_person
+```
+
+Check the table again:
+
+```sql
+select
+    person_id,
+    sequence,
+    surname,
+    _last_ingest_timestamp
+from staging.stg_person;
+```
+
+Now the new raw event should be reflected in `stg_person`.
+
 Run tests:
 
 ```powershell

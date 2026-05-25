@@ -166,6 +166,87 @@ $$);
 
 After `dbt run`, `stg_person` should show only the row with `sequence = 1010` for this `person_id`.
 
+## Update unit tests
+
+If you created `models/mystaging/stg_person_unit_tests.yml` in Step 07, update the second test.
+
+`stg_person` now returns current person state, not all distinct events.
+
+- The exact duplicate test can stay the same.
+- The second test should now expect only one row for the same `person_id`.
+- Use different `sequence` values.
+- The expected row should be the one with the highest `sequence`.
+
+Replace the second unit test with:
+
+```yaml
+  - name: stg_person_keeps_latest_event_per_person
+    model: stg_person
+    given:
+      - input: source('raw', 'raw_person')
+        format: sql
+        rows: |
+          select parse_json($$
+          {
+            "events": [
+              {
+                "metadata": {
+                  "event_id": "7b3b31d4-6df8-4e1f-9f7f-6ec22a7d3f41",
+                  "type": "person.v1",
+                  "time": "2026-05-23T12:34:56Z",
+                  "sequence": 1000,
+                  "mutation": "insert"
+                },
+                "data": {
+                  "person_id": "db2e56e1-54f4-4f8e-91a5-63d02ad8b8a1",
+                  "pin": "1234567890",
+                  "first_name": "John",
+                  "surname": "Doe",
+                  "date_of_birth": "1980-01-15"
+                }
+              }
+            ]
+          }
+          $$) as payload
+          union all
+          select parse_json($$
+          {
+            "events": [
+              {
+                "metadata": {
+                  "event_id": "8a1779b1-0b38-4cf0-a7c0-4fda585f9e4c",
+                  "type": "person.v1",
+                  "time": "2026-05-23T12:40:56Z",
+                  "sequence": 1010,
+                  "mutation": "update"
+                },
+                "data": {
+                  "person_id": "db2e56e1-54f4-4f8e-91a5-63d02ad8b8a1",
+                  "pin": "1234567890",
+                  "first_name": "John",
+                  "surname": "Updated",
+                  "date_of_birth": "1980-01-15"
+                }
+              }
+            ]
+          }
+          $$) as payload
+    expect:
+      format: sql
+      rows: |
+        select
+            '8a1779b1-0b38-4cf0-a7c0-4fda585f9e4c' as event_id,
+            'person.v1' as event_type,
+            '2026-05-23T12:40:56'::timestamp_ntz as event_time,
+            1010 as sequence,
+            'update' as mutation,
+            'db2e56e1-54f4-4f8e-91a5-63d02ad8b8a1' as person_id,
+            '1234567890' as pin,
+            'John' as first_name,
+            'Updated' as surname,
+            '1980-01-15'::date as date_of_birth
+```
+
 ## Run
 
 Rebuild the staging view:
