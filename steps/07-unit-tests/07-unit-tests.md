@@ -228,3 +228,4 @@ Expected result:
 
 - [Back to README](../../README.md)
 - [Previous step: 06 Deduplicate Staging](../06-deduplicate-staging/06-deduplicate-staging.md)
+- [Next step: 08 Current Person](../08-current-person/08-current-person.md)
