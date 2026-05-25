@@ -254,3 +254,4 @@ This query can show idempotent duplicates, but it is not a dbt failure in this s
 
 - [Back to README](../../README.md)
 - [Previous step: 04 Source Clone Vars](../04-source-clone-vars/04-source-clone-vars.md)
+- [Next step: 06 Deduplicate Staging](../06-deduplicate-staging/06-deduplicate-staging.md)

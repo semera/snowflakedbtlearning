@@ -22,6 +22,8 @@ The project is built step by step. Each step should be small and focused.
 - [steps/03-staging/](steps/03-staging/03-staging.md) - first simple staging model.
 - [steps/04-source-clone-vars/](steps/04-source-clone-vars/04-source-clone-vars.md) - dbt vars, source, and raw clone.
 - [steps/05-tests/](steps/05-tests/05-tests.md) - source descriptions and basic dbt data tests.
+- [steps/06-deduplicate-staging/](steps/06-deduplicate-staging/06-deduplicate-staging.md) - distinct staging rows and uniqueness tests.
+- [steps/07-unit-tests/](steps/07-unit-tests/07-unit-tests.md) - mocked inputs and unit test examples.
 
 Step names should be short, for example `01-init` or `03-staging`.
 
