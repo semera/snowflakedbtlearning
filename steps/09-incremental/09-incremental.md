@@ -290,3 +290,4 @@ This is still a learning version.
 
 - [Back to README](../../README.md)
 - [Previous step: 08 Current Person](../08-current-person/08-current-person.md)
+- [Next step: 10 Sequence Merge](../10-sequence-merge/10-sequence-merge.md)
