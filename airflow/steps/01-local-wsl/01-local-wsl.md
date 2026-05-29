@@ -18,40 +18,16 @@ This step does not use Docker and does not integrate with dbt.
 - The scheduler decides when DAG runs should be created.
 - The UI lets you inspect DAGs, runs, tasks, and logs.
 
-Airflow does not replace Python code. It decides when and how tasks run.
-
-## Prerequisites
-
-- Windows with WSL2.
-- Ubuntu in WSL.
-- Internet access from WSL.
-
-If WSL is not installed, run this in Windows PowerShell as admin:
-
-```powershell
-wsl --install
-```
-
-Then restart Windows if requested and open Ubuntu.
+Airflow decides when and how tasks run.
 
 ## Install System Packages
-
-Run in Ubuntu/WSL:
 
 ```bash
 sudo apt update
 sudo apt install -y python3 python3-venv python3-pip
 ```
 
-Check Python:
-
-```bash
-python3 --version
-```
-
 ## Create Python Environment
-
-Run in Ubuntu/WSL:
 
 ```bash
 mkdir -p ~/airflow-learning
@@ -99,19 +75,11 @@ Start local standalone Airflow:
 airflow standalone
 ```
 
-Keep this terminal open.
-
 Airflow prints:
 
 - UI URL, usually `http://localhost:8080`
 - username, usually `admin`
-- generated password
-
-Open the UI in Windows browser:
-
-```text
-http://localhost:8080
-```
+- generated password - check ```cat $AIRFLOW_HOME/simple_auth_manager_passwords.json.generated```
 
 ## Add First DAG
 
