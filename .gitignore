@@ -220,3 +220,8 @@ __marimo__/
 
 
 .mytest/
+
+# Airflow local runtime
+airflow/.airflow-home/
+airflow/**/logs/
+airflow/**/*.db

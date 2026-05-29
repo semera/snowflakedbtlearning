@@ -23,27 +23,18 @@ These rules apply to all current and future agents working in this repository.
   - `git log`
   - `git show`
 
-## Project Direction
+## Guide Structure
 
-- This is a learning project for local `dbt-core` with Snowflake.
-- Build the project in small steps.
+- This repository contains multiple personal learning guides.
+- Put guide-specific content inside the guide folder, for example `dbt/`.
+- Build each guide in small steps.
 - Use short step directory names, for example:
   - `steps/01-init`
   - `steps/02-staging`
 - Each step should contain a short markdown guide and any files needed for that step.
 - Do not overbuild future steps.
-- Explain dbt concepts only when they are first used.
-
-## Data Contracts
-
-- Use only the raw event contracts from `docs/contract.md`.
-- Current event types are:
-  - `person.v1`
-  - `address.v1`
-- Do not add new raw event contracts unless the user asks for it.
 
 ## Secrets
 
 - Never write real secrets or credentials.
 - Use placeholders only when secrets become needed.
-- Do not add Snowflake connection details until the project step needs them.
