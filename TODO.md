@@ -34,6 +34,14 @@ Future topics to learn:
    - Learn normal run, test, full refresh, and selector patterns.
    - Why: incremental models need careful rebuild and test habits.
 
+9. Snowflake clustering
+   - Learn when to add `cluster_by` to large dbt models.
+   - Why: Snowflake does not use normal indexes; clustering can help large scans and merges.
+
+10. Safe full rebuilds
+    - Build a full refreshed table on the side, validate it, then swap it with the production table in Snowflake.
+    - Why: `--full-refresh` can be risky if it replaces the live table directly.
+
 Later:
 
 - orchestration
