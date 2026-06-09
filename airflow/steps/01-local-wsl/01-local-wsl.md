@@ -20,6 +20,23 @@ This step does not use Docker and does not integrate with dbt.
 
 Airflow decides when and how tasks run.
 
+## Knowledge: DAG file refresh
+
+Airflow does not load every new DAG file immediately.
+
+- The DAG processor scans the DAG folder repeatedly.
+- In Airflow 3, the refresh interval can be configured.
+- A shorter interval makes new DAG files appear faster during local learning.
+- This setting is useful for development, not required for production.
+
+Use this local setting before starting Airflow:
+
+```bash
+export AIRFLOW__DAG_PROCESSOR__REFRESH_INTERVAL=30
+```
+
+This asks Airflow to refresh DAG files every 30 seconds.
+
 ## Install System Packages
 
 ```bash
@@ -72,6 +89,11 @@ export AIRFLOW_HOME=~/airflow-learning/airflow-home
 Start local standalone Airflow:
 
 ```bash
+cd ~/airflow-learning
+source ~/airflow-learning/.venv/bin/activate
+
+export AIRFLOW_HOME=~/airflow-learning/airflow-home
+export AIRFLOW__DAG_PROCESSOR__REFRESH_INTERVAL=30
 airflow standalone
 ```
 
@@ -119,23 +141,7 @@ Expected log line:
 Hello from Airflow
 ```
 
-## What We Learned
 
-- Airflow runs as local WSL processes when started manually.
-- The scheduler parses DAG files from the `dags` folder.
-- A DAG file defines structure.
-- A task contains work.
-- Logs are the first place to check task behavior.
-
-## Stop Airflow
-
-In the terminal running Airflow:
-
-```bash
-Ctrl+C
-```
-
-Airflow is not a Windows service in this step. It runs only while you start it.
 
 ## Navigation
 

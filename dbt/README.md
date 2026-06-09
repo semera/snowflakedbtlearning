@@ -31,17 +31,6 @@ The project is built step by step. Each step should be small and focused.
 
 Step names should be short, for example `01-init` or `03-staging`.
 
-## Step Style
-
-Each step should explain:
-
-- what we build
-- which files are used
-- which commands are run
-- what we learned
-
-The exact step template can change while the project grows.
-
 ## Documentation Rules
 
 - Documentation is written in simple English.
