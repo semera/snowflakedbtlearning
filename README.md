@@ -6,6 +6,7 @@ Personal learning guides for data engineering topics.
 
 - [dbt with Snowflake](dbt/README.md) - local `dbt-core` learning project with Snowflake.
 - [Airflow](airflow/README.md) - local Airflow learning guide.
+- [LangGraph](langgraph/README.md) - local LangGraph learning guide.
 - [Tools](tools/README.md) - small local tooling notes.
 
 ## Repository Rules

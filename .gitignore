@@ -220,6 +220,7 @@ __marimo__/
 
 
 .mytest/
+.test/
 
 # Airflow local runtime
 airflow/.airflow-home/
