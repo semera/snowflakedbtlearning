@@ -6,3 +6,4 @@ Small local tooling notes.
 
 - [Git SSH key](git.md)
 - [VS Code in WSL](vscode-in-wsl.md)
+- [Zoekt](Zoekt.md)
